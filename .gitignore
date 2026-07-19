@@ -1,0 +1,12 @@
+# Local Python environments and generated files
+.venv/
+**/__pycache__/
+*.py[cod]
+.DS_Store
+
+# Unfinished one-off scripts currently at the repository root
+/*.py
+
+# Local configuration
+.env
+.env.*
