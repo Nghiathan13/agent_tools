@@ -1,4 +1,4 @@
-# Agent Chromium
+# Chromium cho agent
 
 Một Chromium riêng, điều khiển qua helper Python, có thể dùng để hỏi ChatGPT trong profile cục bộ của người dùng.
 
@@ -30,4 +30,4 @@ $PYTHON chatgpt/show_sessions.py
 $PYTHON chatgpt/open_chatgpt.py session '<id>' 'Câu hỏi tiếp theo'
 ```
 
-Các helper Chromium: [helpers/README.md](helpers/README.md). Hướng dẫn ChatGPT: [chatgpt/README.md](chatgpt/README.md). Hướng dẫn cho coding agent: [AGENTS.md](AGENTS.md).
+Hướng dẫn helper Chromium: [helpers/README.md](helpers/README.md). Hướng dẫn ChatGPT: [chatgpt/README.md](chatgpt/README.md). Hướng dẫn cho coding agent: [AGENTS.md](AGENTS.md).

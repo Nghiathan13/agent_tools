@@ -1,9 +1,5 @@
-# Agent tools
+## Công cụ hiện có
 
-Shared local tools for the team. Each stable tool lives in its own folder with setup and usage instructions.
+- [Chromium và ChatGPT](chromium/README.md): profile trình duyệt riêng, helper quản lý tab và helper quản lý phiên ChatGPT.
 
-## Available tools
-
-- [Chromium and ChatGPT](chromium/README.md): a separate browser profile, tab helpers, and ChatGPT session helpers.
-
-Top-level Python scripts are currently experimental and intentionally ignored by Git. Add future team tools as folders with their own README and requirements.
+Các script Python ở thư mục gốc hiện đang thử nghiệm và được Git chủ động bỏ qua. Khi thêm công cụ mới, hãy tạo thư mục riêng cùng README và file requirements của công cụ đó.

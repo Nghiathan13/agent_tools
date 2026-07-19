@@ -1,4 +1,4 @@
-# Chromium helpers
+# Helper Chromium
 
 Chạy từ root của repository:
 
@@ -14,4 +14,4 @@ PYTHON=.venv/bin/python
 - Chuyển focus sang tab: `$PYTHON helpers/focus_tab.py '<id>'`
 - Đóng tab theo ID: `$PYTHON helpers/close_tab.py '<id>'`
 
-`open-tabs.json` chứa `focusedTabId` do helper đặt. Click tab thủ công trong Chromium chưa được theo dõi.
+`open-tabs.json` chứa `focusedTabId` do helper đặt. Việc click tab thủ công trong Chromium hiện chưa được theo dõi.
