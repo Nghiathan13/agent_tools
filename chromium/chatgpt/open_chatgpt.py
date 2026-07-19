@@ -21,7 +21,6 @@ from new_tab import open_tab
 from tab_state import (
     DEBUGGING_URL,
     activate_tab,
-    focused_tab_id,
     list_tabs,
     snapshot_tabs,
 )
@@ -55,7 +54,7 @@ def ensure_chromium() -> bool:
         stderr=subprocess.DEVNULL,
         start_new_session=True,
     )
-    for _ in range(10):
+    for _ in range(20):
         if is_chromium_running():
             return True
         time.sleep(0.5)
@@ -68,7 +67,7 @@ def load_sessions() -> list[dict]:
     return json.loads(sessions_path.read_text())["sessions"]
 
 
-def save_session(session_id: str, url: str, title: str) -> None:
+def save_session(session_id: str, url: str, title: str = "") -> None:
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     sessions = load_sessions()
     session = next((item for item in sessions if item["id"] == session_id), None)
@@ -84,7 +83,6 @@ def save_session(session_id: str, url: str, title: str) -> None:
         )
     else:
         session["url"] = url
-        session["title"] = title or session["title"]
         session["lastUsedAt"] = now
     sessions_path.write_text(
         json.dumps({"version": 1, "sessions": sessions}, ensure_ascii=False, indent=2)
@@ -92,18 +90,23 @@ def save_session(session_id: str, url: str, title: str) -> None:
     )
 
 
-def ensure_chatgpt_tab() -> str:
-    tabs = {tab["id"]: tab for tab in list_tabs() if tab["type"] == "page"}
-    target = tabs.get(focused_tab_id())
-    if target and target["url"].startswith(CHATGPT_URL):
+def ensure_chatgpt_tab(session_url: str | None = None) -> tuple[str, bool]:
+    tabs = [tab for tab in list_tabs() if tab["type"] == "page"]
+    if session_url:
+        session_tab = next((tab for tab in tabs if tab["url"] == session_url), None)
+        if session_tab:
+            activate_tab(session_tab["id"])
+            return session_tab["id"], True
+
+    root_tabs = [tab for tab in tabs if tab["url"] == CHATGPT_URL]
+    target = root_tabs[0] if root_tabs else None
+    if target:
         activate_tab(target["id"])
-        snapshot_tabs(target["id"])
-        return target["id"]
+        return target["id"], False
 
     target = open_tab(CHATGPT_URL)
     activate_tab(target["id"])
-    snapshot_tabs(target["id"])
-    return target["id"]
+    return target["id"], False
 
 
 def page_for_target(browser, target_id: str):
@@ -149,18 +152,6 @@ def session_id_from_url(url: str) -> str | None:
     return None
 
 
-def wait_for_new_session(target_id: str, previous_ids: set[str], timeout_seconds: int) -> tuple[str, str]:
-    deadline = time.monotonic() + min(RESPONSE_START_TIMEOUT_SECONDS, timeout_seconds)
-    while time.monotonic() < deadline:
-        target = next((tab for tab in list_tabs() if tab["id"] == target_id), None)
-        url = target["url"] if target else ""
-        session_id = session_id_from_url(url)
-        if session_id and session_id not in previous_ids:
-            return session_id, url
-        time.sleep(0.25)
-    raise RuntimeError("ChatGPT did not create a conversation within 30 seconds.")
-
-
 def wait_for_session_history(page) -> None:
     deadline = time.monotonic() + RESPONSE_START_TIMEOUT_SECONDS
     messages = page.locator('[data-message-author-role]')
@@ -198,7 +189,6 @@ def ask(page, target_id: str, prompt: str, timeout_seconds: int, session: dict |
     copies = page.locator('button[aria-label="Copy response"]')
     previous_assistants = assistants.count()
     previous_copies = copies.count()
-    previous_session_ids = set(sidebar_sessions(page))
 
     editor = page.locator('[contenteditable="true"]')
     editor.wait_for(state="visible", timeout=10_000)
@@ -206,13 +196,18 @@ def ask(page, target_id: str, prompt: str, timeout_seconds: int, session: dict |
     editor.press_sequentially(prompt)
     editor.press("Enter")
 
+    response = wait_for_response(page, previous_assistants, previous_copies, timeout_seconds)
+
     if session:
         session_id, url = session["id"], session["url"]
-    else:
-        session_id, url = wait_for_new_session(target_id, previous_session_ids, timeout_seconds)
+        save_session(session_id, url)
+        return response
 
-    save_session(session_id, url, conversation_title(page, session_id))
-    response = wait_for_response(page, previous_assistants, previous_copies, timeout_seconds)
+    target = next(tab for tab in list_tabs() if tab["id"] == target_id)
+    url = target["url"]
+    session_id = session_id_from_url(url)
+    if session_id is None:
+        raise RuntimeError("ChatGPT did not create a conversation.")
     save_session(session_id, url, conversation_title(page, session_id))
     return response
 
@@ -241,20 +236,18 @@ def main() -> None:
 
     try:
         session = None
-        target_url = CHATGPT_URL
         if arguments.command == "session":
             session = next(item for item in load_sessions() if item["id"] == arguments.id)
-            target_url = session["url"]
 
-        target_id = ensure_chatgpt_tab()
+        target_id, session_is_open = ensure_chatgpt_tab(session["url"] if session else None)
         with sync_playwright() as playwright:
             browser = playwright.chromium.connect_over_cdp(DEBUGGING_URL)
             page = page_for_target(browser, target_id)
-            page.goto(target_url, wait_until="domcontentloaded", timeout=30_000)
-            page.bring_to_front()
+            if session and not session_is_open:
+                page.goto(session["url"], wait_until="domcontentloaded", timeout=30_000)
+            response = ask(page, target_id, arguments.prompt, arguments.timeout, session)
             snapshot_tabs(target_id)
-            print(ask(page, target_id, arguments.prompt, arguments.timeout, session))
-            snapshot_tabs(target_id)
+            print(response)
     except (HTTPError, URLError, RuntimeError, StopIteration) as error:
         log(str(error))
         raise SystemExit(1)

@@ -10,9 +10,6 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 from patchright.sync_api import sync_playwright
-from tab_state import snapshot_tabs
-
-
 DEBUGGING_URL = "http://127.0.0.1:9222"
 
 
@@ -33,7 +30,6 @@ def main() -> None:
         fcntl.flock(lock_file, fcntl.LOCK_EX)
 
         if is_chromium_running():
-            snapshot_tabs()
             print("Agent Chromium is already running.")
             return
 
@@ -58,7 +54,6 @@ def main() -> None:
         (profile_directory / "chromium.pid").write_text(str(browser.pid))
         for _ in range(10):
             if is_chromium_running():
-                snapshot_tabs()
                 print("Agent Chromium is open.")
                 return
             time.sleep(0.5)
