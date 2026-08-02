@@ -1,0 +1,7 @@
+# Cài torch CUDA TRƯỚC (whisperx pin torch ~=2.8.0):
+#   .venv/bin/pip install torch==2.8.0 torchaudio==2.8.0 torchvision==0.23.0 \
+#     --index-url https://download.pytorch.org/whl/cu128
+youtube-transcript-api>=1.2
+yt-dlp>=2026.7.4
+whisperx==3.8.6
+demucs>=4.1.0

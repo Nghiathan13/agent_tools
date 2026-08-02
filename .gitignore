@@ -2,6 +2,7 @@
 .venv/
 **/__pycache__/
 *.py[cod]
+.pytest_cache/
 .DS_Store
 
 # Unfinished one-off scripts currently at the repository root

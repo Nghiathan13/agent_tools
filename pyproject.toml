@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+testpaths = [
+    "youtube/common/tests",
+    "youtube/tests",
+    "youtube/transcript/music/tests",
+    "youtube/transcript/helper/tests",
+    "youtube/transcript/music/helper/tests",
+]
