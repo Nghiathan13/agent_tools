@@ -41,7 +41,7 @@ def test_build_transcript_orchestrates_fetch(monkeypatch):
     # \n removed and fragments merged into one sentence
     assert result == {
         "video": {
-            "url": "https://youtu.be/9ifQ3xRz4hM",
+            "url": "https://www.youtube.com/watch?v=9ifQ3xRz4hM",
             "videoId": "9ifQ3xRz4hM",
             "title": "T",
             "author": "A",

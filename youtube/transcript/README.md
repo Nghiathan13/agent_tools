@@ -2,18 +2,7 @@
 
 Lấy script (transcript/subtitle) từ video YouTube chỉ qua URL hoặc video ID, dùng [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) — pure Python, nhanh, không cần tải video hay chạy JS runtime.
 
-## Cài đặt
-
-```bash
-cd agent_tools
-# 1) torch CUDA (bắt buộc cài trước — whisperx pin torch ~=2.8.0)
-.venv/bin/pip install torch==2.8.0 torchaudio==2.8.0 torchvision==0.23.0 \
-  --index-url https://download.pytorch.org/whl/cu128
-# 2) các dependency còn lại
-.venv/bin/pip install -r youtube/requirements.txt
-```
-
-whisperx dùng wav2vec2 (tự tải `facebook/wav2vec2-base-960h` ~360MB từ HuggingFace lần đầu chạy) để forced alignment word-level; máy có GPU thì align tự chạy trên CUDA.
+Cài đặt chung (torch CUDA + requirements.txt): xem [youtube/README.md](../README.md).
 
 ## Dùng nhanh
 

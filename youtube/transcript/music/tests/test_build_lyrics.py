@@ -28,7 +28,7 @@ def test_build_lyrics_orchestrates_fetch_filter_merge(monkeypatch):
     # narration filtered out, markers stripped, both lyric segments merged
     assert result == {
         "video": {
-            "url": "https://youtu.be/aircAruvnKk",
+            "url": "https://www.youtube.com/watch?v=aircAruvnKk",
             "videoId": "aircAruvnKk",
             "title": "Test Song",
             "author": "Artist",

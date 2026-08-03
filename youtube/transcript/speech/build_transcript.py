@@ -35,6 +35,7 @@ def build_transcript(
     video_id = extract_video_id(url)
     if video_id is None:
         raise ValueError(f"Invalid YouTube URL: {url}")
+    url = f"https://www.youtube.com/watch?v={video_id}"
     segments, metadata = fetch_segments_and_metadata(video_id, languages)
     segments = [
         {**segment, "text": clean_text(segment["text"])} for segment in segments
