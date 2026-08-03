@@ -3,6 +3,8 @@ testpaths = [
     "youtube/common/tests",
     "youtube/tests",
     "youtube/transcript/music/tests",
+    "youtube/transcript/speech/tests",
     "youtube/transcript/helper/tests",
     "youtube/transcript/music/helper/tests",
+    "youtube/transcript/speech/helper/tests",
 ]
