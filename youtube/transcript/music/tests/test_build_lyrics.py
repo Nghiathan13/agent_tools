@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-import build_lyrics as bl
+from youtube.transcript.music import build_lyrics as bl
 
 
 def lyric_seg(text, start_ms, end_ms):

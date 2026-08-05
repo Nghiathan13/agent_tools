@@ -1,6 +1,6 @@
 """Tests for speech/helper/clean_text.py."""
 
-from clean_text import clean_text
+from youtube.transcript.speech.helper.clean_text import clean_text
 
 
 def test_newline_replaced_with_space():

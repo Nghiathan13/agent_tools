@@ -9,17 +9,13 @@ from urllib.error import HTTPError, URLError
 
 from youtube_transcript_api import YouTubeTranscriptApiException
 
+from youtube.common.validate_url import extract_video_id
+from youtube.transcript.helper.fetch_transcript import fetch_segments_and_metadata
+from youtube.transcript.music.helper.filter_lyrics import filter_lyrics, strip_markers
+from youtube.transcript.music.helper.merge_lyrics import merge_lyrics
+
 ROOT = Path(__file__).resolve().parent
 OUTPUT_DIR = ROOT / "output"
-# Make the helper modules importable when running this file directly.
-sys.path.insert(0, str(ROOT / "helper"))  # music/helper: filter_lyrics, merge_lyrics
-sys.path.insert(0, str(ROOT.parent / "helper"))  # helper: fetch_transcript
-sys.path.insert(0, str(ROOT.parents[1] / "common"))  # common: validate_url
-
-from fetch_transcript import fetch_segments_and_metadata  # noqa: E402
-from filter_lyrics import filter_lyrics, strip_markers  # noqa: E402
-from merge_lyrics import merge_lyrics  # noqa: E402
-from validate_url import extract_video_id  # noqa: E402
 
 
 def build_lyrics(

@@ -2,16 +2,13 @@
 """Trim an audio file to a time range without re-encoding."""
 
 import argparse
-import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent / "common"))
-
-import fetch_audio  # noqa: E402
-from validate_url import extract_video_id  # noqa: E402
+from youtube.common import fetch_audio
+from youtube.common.validate_url import extract_video_id
 
 
 def trim_audio(audio: str, start_ms: int, end_ms: int, output: str) -> Path:

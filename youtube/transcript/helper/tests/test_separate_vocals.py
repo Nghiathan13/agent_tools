@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from separate_vocals import default_output, pick_device, separate_vocals
+from youtube.transcript.helper.separate_vocals import default_output, pick_device, separate_vocals
 
 
 def test_pick_device(monkeypatch):
@@ -34,7 +34,7 @@ def test_separate_vocals_constructs_demucs_command(tmp_path, monkeypatch):
         source.write_bytes(b"x")
         return subprocess.CompletedProcess(cmd, 0)
 
-    monkeypatch.setattr("separate_vocals.tempfile.mkdtemp", lambda prefix="": str(tmp_path / "demucs_work"))
+    monkeypatch.setattr("youtube.transcript.helper.separate_vocals.tempfile.mkdtemp", lambda prefix="": str(tmp_path / "demucs_work"))
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     result = separate_vocals(str(audio), str(output), "htdemucs_ft", "cuda", 7)
@@ -62,7 +62,7 @@ def test_separate_vocals_raises_when_no_vocals_output(tmp_path, monkeypatch):
     def fake_run(cmd, **kwargs):
         return subprocess.CompletedProcess(cmd, 0)
 
-    monkeypatch.setattr("separate_vocals.tempfile.mkdtemp", lambda prefix="": str(tmp_path / "demucs_work"))
+    monkeypatch.setattr("youtube.transcript.helper.separate_vocals.tempfile.mkdtemp", lambda prefix="": str(tmp_path / "demucs_work"))
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     with pytest.raises(RuntimeError):

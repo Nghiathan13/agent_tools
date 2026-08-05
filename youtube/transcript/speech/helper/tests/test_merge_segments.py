@@ -2,8 +2,8 @@
 
 import numpy as np
 
-import merge_segments as ms
-from merge_segments import has_sentence_end, merge_segments, split_sentences, word_count
+from youtube.transcript.speech.helper import merge_segments as ms
+from youtube.transcript.speech.helper.merge_segments import has_sentence_end, merge_segments, split_sentences, word_count
 
 
 def seg(text, start_ms=None, end_ms=None):
@@ -20,16 +20,16 @@ def word(text, start_ms, end_ms):
 
 
 def mock_align(monkeypatch, entries):
-    """Patch load_aligner/pick_device and capture the align_texts call."""
+    """Patch load_aligner/pick_device and capture the align_words call."""
     calls = {}
 
-    def fake_align_texts(texts, model, metadata, audio, device):
+    def fake_align_words(texts, model, metadata, audio, device):
         calls["texts"] = texts
         return entries
 
     monkeypatch.setattr(ms, "load_aligner", lambda language, device: ("model", "meta"))
     monkeypatch.setattr(ms, "pick_device", lambda: "cpu")
-    monkeypatch.setattr(ms, "align_texts", fake_align_texts)
+    monkeypatch.setattr(ms, "align_words", fake_align_words)
     return calls
 
 
@@ -378,7 +378,7 @@ def test_fill_no_runs_does_not_align(monkeypatch):
         raise AssertionError("align must not run without runs")
 
     monkeypatch.setattr(ms, "load_aligner", should_not_be_called)
-    monkeypatch.setattr(ms, "align_texts", should_not_be_called)
+    monkeypatch.setattr(ms, "align_words", should_not_be_called)
     segments = [seg("A.", 0, 1000), seg("B.", 1000, 2000)]
 
     result = merge_segments(segments, audio=np.zeros(16000))

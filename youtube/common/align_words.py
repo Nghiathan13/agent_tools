@@ -1,9 +1,12 @@
-"""Align multiple text windows against audio with wav2vec2 in one forward pass."""
+"""Align text windows against audio with wav2vec2 and find word timestamps."""
 
 from typing import Any
 
 import numpy as np
+import torch
 import whisperx
+
+_ALIGNER_CACHE: dict[tuple[Any, ...], tuple[Any, dict]] = {}
 
 
 def _norm(text: str) -> str:
@@ -11,30 +14,32 @@ def _norm(text: str) -> str:
     return " ".join(text.split())
 
 
-def _norm_word(word: str) -> str:
-    """Lowercase and strip punctuation for word matching."""
+def prepare_audio(path: str) -> np.ndarray:
+    """Load an audio file as a 16 kHz mono float32 waveform."""
+    return whisperx.load_audio(path)
+
+
+def load_aligner(language: str, device: str, model_name: str | None = None):
+    """Load (and cache) the wav2vec2 alignment model for a language."""
+    key = (language, device, model_name)
+    if key not in _ALIGNER_CACHE:
+        _ALIGNER_CACHE[key] = whisperx.load_align_model(
+            language_code=language, device=device, model_name=model_name
+        )
+    return _ALIGNER_CACHE[key]
+
+
+def pick_device() -> str:
+    """Return 'cuda' when available, otherwise 'cpu'."""
+    return "cuda" if torch.cuda.is_available() else "cpu"
+
+
+def normalize_word(word: str) -> str:
+    """Lowercase and strip punctuation and lyric markers for matching."""
     return "".join(ch for ch in word.lower() if ch.isalnum() or ch.isspace()).strip()
 
 
-def find_words(entries: list[dict], targets: list[str]) -> list[dict]:
-    """Return the first occurrence's timestamp for each target word.
-
-    Matched case-insensitively with punctuation stripped (e.g. "Later" vs
-    "later", "polyglot," vs "polyglot"), in target order. Targets without a
-    match are omitted.
-    """
-    pool = [word for entry in entries for word in entry["words"]]
-    results = []
-    for target in targets:
-        normalized = _norm_word(target)
-        for word in pool:
-            if _norm_word(word["word"]) == normalized:
-                results.append(word)
-                break
-    return results
-
-
-def align_texts(
+def align_words(
     texts: list[dict],
     model: Any,
     metadata: dict,
@@ -92,3 +97,21 @@ def align_texts(
             }
         )
     return outputs
+
+
+def find_words(entries: list[dict], targets: list[str]) -> list[dict]:
+    """Return the first occurrence's timestamp for each target word.
+
+    Matched case-insensitively with punctuation stripped (e.g. "Later" vs
+    "later", "polyglot," vs "polyglot"), in target order. Targets without a
+    match are omitted.
+    """
+    pool = [word for entry in entries for word in entry["words"]]
+    results = []
+    for target in targets:
+        normalized = normalize_word(target)
+        for word in pool:
+            if normalize_word(word["word"]) == normalized:
+                results.append(word)
+                break
+    return results

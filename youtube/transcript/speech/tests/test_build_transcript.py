@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import build_transcript as bt
+from youtube.transcript.speech import build_transcript as bt
 
 
 def seg(text, start_ms, end_ms):

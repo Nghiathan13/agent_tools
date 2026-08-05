@@ -1,3 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "youtube-tools"
+version = "0.1.0"
+description = "YouTube transcript, lyrics and audio tools"
+requires-python = ">=3.12"
+dependencies = [
+    "youtube-transcript-api>=1.2",
+    "yt-dlp>=2026.7.4",
+]
+
+[project.scripts]
+build-transcript = "youtube.transcript.speech.build_transcript:main"
+build-lyrics = "youtube.transcript.music.build_lyrics:main"
+trim-audio = "youtube.trim_audio:main"
+
+[tool.setuptools.packages.find]
+include = ["youtube*"]
+
 [tool.pytest.ini_options]
 testpaths = [
     "youtube/common/tests",
@@ -8,3 +30,4 @@ testpaths = [
     "youtube/transcript/music/helper/tests",
     "youtube/transcript/speech/helper/tests",
 ]
+pythonpath = ["."]

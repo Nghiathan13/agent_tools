@@ -1,16 +1,10 @@
 """Merge caption segments into complete sentences; fill missing timestamps via alignment."""
 
 import re
-import sys
-from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "helper"))  # helper: find_word
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "common"))  # common: align_text
-
-from align_text import align_texts  # noqa: E402
-from find_word import load_aligner, pick_device  # noqa: E402
+from youtube.common.align_words import align_words, load_aligner, pick_device
 
 SENTENCE_END = (".", "!", "?", "...")
 # Single-char sentence endings (SENTENCE_END minus the "..." sequence).
@@ -124,7 +118,7 @@ def _fill_missing_timestamps(merged: list[dict], audio: np.ndarray, device: str)
     if not runs:
         return
     model, metadata = load_aligner("en", device)
-    aligned = align_texts(
+    aligned = align_words(
         [
             {
                 "start": run["start"] / 1000,

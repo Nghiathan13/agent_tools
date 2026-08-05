@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from trim_audio import default_output, main, trim_audio
+from youtube.trim_audio import default_output, main, trim_audio
 
 
 def test_trim_audio_constructs_ffmpeg_command(tmp_path, monkeypatch):
@@ -101,7 +101,7 @@ def test_main_ffmpeg_error_exits_cleanly(tmp_path, capsys, monkeypatch):
 def test_main_url_composes_fetch_audio(tmp_path, capsys, monkeypatch):
     output = tmp_path / "out.webm"
     monkeypatch.setattr(
-        "trim_audio.tempfile.mktemp", lambda prefix="": str(tmp_path / "tmp_src")
+        "youtube.trim_audio.tempfile.mktemp", lambda prefix="": str(tmp_path / "tmp_src")
     )
 
     def fake_download(url, output_base):
@@ -112,7 +112,7 @@ def test_main_url_composes_fetch_audio(tmp_path, capsys, monkeypatch):
         output.write_bytes(b"x")
         return subprocess.CompletedProcess(cmd, 0)
 
-    monkeypatch.setattr("fetch_audio.download_audio", fake_download)
+    monkeypatch.setattr("youtube.common.fetch_audio.download_audio", fake_download)
     monkeypatch.setattr(subprocess, "run", fake_run)
     monkeypatch.setattr(
         sys,

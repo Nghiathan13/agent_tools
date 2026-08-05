@@ -1,6 +1,6 @@
 """Tests for helper/fetch_transcript.py."""
 
-from fetch_transcript import (
+from youtube.transcript.helper.fetch_transcript import (
     fetch_segments,
     fetch_segments_and_metadata,
     metadata_from_details,
@@ -54,9 +54,9 @@ def test_fetch_segments_and_metadata_shares_player_response(monkeypatch):
     class FakeApi:
         _fetcher = FakeFetcher()
 
-    monkeypatch.setattr("fetch_transcript.YouTubeTranscriptApi", lambda: FakeApi())
+    monkeypatch.setattr("youtube.transcript.helper.fetch_transcript.YouTubeTranscriptApi", lambda: FakeApi())
     monkeypatch.setattr(
-        "fetch_transcript.TranscriptList.build",
+        "youtube.transcript.helper.fetch_transcript.TranscriptList.build",
         lambda http_client, video_id, captions_json: FakeList(),
     )
 
@@ -87,6 +87,6 @@ def test_fetch_segments_converts_to_ms(monkeypatch):
         def fetch(self, video_id):
             return [FakeResult()]
 
-    monkeypatch.setattr("fetch_transcript.YouTubeTranscriptApi", FakeApi)
+    monkeypatch.setattr("youtube.transcript.helper.fetch_transcript.YouTubeTranscriptApi", FakeApi)
 
     assert fetch_segments("abc") == [{"text": "hi", "startMs": 1000, "endMs": 3000}]

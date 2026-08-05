@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from fetch_audio import download_audio
+from youtube.common.fetch_audio import download_audio
 
 
 def test_download_audio_constructs_ytdlp_command(tmp_path, monkeypatch):

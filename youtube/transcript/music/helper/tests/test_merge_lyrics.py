@@ -1,6 +1,6 @@
 """Tests for music/merge_lyrics.py."""
 
-from merge_lyrics import join_text, merge_lyrics, word_count
+from youtube.transcript.music.helper.merge_lyrics import join_text, merge_lyrics, word_count
 
 
 def seg(text, start_ms, end_ms):

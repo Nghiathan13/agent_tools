@@ -1,6 +1,6 @@
 """Tests for helper/validate_url.py."""
 
-from validate_url import extract_video_id, is_valid_youtube_url
+from youtube.common.validate_url import extract_video_id, is_valid_youtube_url
 
 
 def test_extract_video_id_valid_formats():

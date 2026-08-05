@@ -11,19 +11,15 @@ from urllib.error import HTTPError, URLError
 
 from youtube_transcript_api import YouTubeTranscriptApiException
 
+from youtube.common.fetch_audio import download_audio
+from youtube.common.validate_url import extract_video_id
+from youtube.common.align_words import pick_device, prepare_audio
+from youtube.transcript.helper.fetch_transcript import fetch_segments_and_metadata
+from youtube.transcript.speech.helper.clean_text import clean_text
+from youtube.transcript.speech.helper.merge_segments import merge_segments
+
 ROOT = Path(__file__).resolve().parent
 OUTPUT_DIR = ROOT / "output"
-# Make the helper modules importable when running this file directly.
-sys.path.insert(0, str(ROOT / "helper"))  # speech/helper: clean_text, merge_segments
-sys.path.insert(0, str(ROOT.parent / "helper"))  # helper: fetch_transcript, find_word
-sys.path.insert(0, str(ROOT.parents[1] / "common"))  # common: validate_url, fetch_audio, align_text
-
-from clean_text import clean_text  # noqa: E402
-from fetch_audio import download_audio  # noqa: E402
-from fetch_transcript import fetch_segments_and_metadata  # noqa: E402
-from find_word import pick_device, prepare_audio  # noqa: E402
-from merge_segments import merge_segments  # noqa: E402
-from validate_url import extract_video_id  # noqa: E402
 
 
 def build_transcript(

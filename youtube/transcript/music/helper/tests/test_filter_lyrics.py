@@ -1,6 +1,6 @@
 """Tests for music/filter_lyrics.py."""
 
-from filter_lyrics import clean_text, filter_lyrics, is_lyrics, strip_markers
+from youtube.transcript.music.helper.filter_lyrics import clean_text, filter_lyrics, is_lyrics, strip_markers
 
 
 def test_is_lyrics_accepts_marked_lines():
